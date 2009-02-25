@@ -39,7 +39,6 @@ function keypressed(key)
 		g_console:toggle() -- Or if you'd like, g_console:display(true/false)
 	end
 	
-	
 end
 
 function connectCallback()
@@ -54,11 +53,11 @@ function disconnectCallback()
 	message = "disconnected"
 end
 
-function initClient()
+function initClient(ip)
 	client:Init(26001)
 	client:setCallback(recCallback,connectCallback,disconnectCallback)
 	client:setHandshake("hello")
-	client:connect('72.90.113.69',26001)
+	client:connect(ip,26001)
 	client:send("hello!")
 	message = "client started"
 end
