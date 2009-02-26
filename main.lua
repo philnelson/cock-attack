@@ -1,10 +1,13 @@
 function load()
-	love.filesystem.include "Console.lua"
+	role = "none"
 	message = "nobody's here"
+	remoteMessage = ""
+	yourMessage = ""
+	status = "not connected"
+	
+	love.filesystem.include "Console.lua"
 	love.filesystem.include "Client.lua"
 	love.filesystem.include "Server.lua"
-	message = "doing nothing"
-	remoteMessage = ""
 	font = love.graphics.newFont(love.default_font, 12)
 	love.graphics.setFont(font)
 	g_console = Console:new()
@@ -14,11 +17,15 @@ end
 function draw()
 	love.graphics.draw(message, 100, 300)
 	love.graphics.draw('someone:' .. ' ' .. remoteMessage,100,350)
+	love.graphics.draw('you:' .. ' ' .. yourMessage,100,400)
+	love.graphics.draw(role .. ' : ' .. status,5,590)
 	g_console:draw()
 end
 
 function update(dt)
-	client:update()
+	if role == "server" then server:update();
+	elseif role == "client" then client:update();
+	end
 	g_console:update(dt)
 end
 
@@ -42,15 +49,30 @@ function keypressed(key)
 end
 
 function connectCallback()
-	message = "connected"
+	status = "connected"
 end
 
 function recCallback()
 	message = "recieved message"
+	remoteMessage = data
 end
 
 function disconnectCallback()
-	message = "disconnected"
+	status = "disconnected"
+end
+
+function sendMessage(string)
+	if role == "server" then server:send(string); yourMessage = string
+	elseif role == "client" then client:send(string); yourMessage = string
+	elseif role == "none" then message = "can't send message, you are not connected to anything"
+	end
+end
+
+function stopNetworking()
+	if role == "server" then message = "server stopped";
+		elseif role == "client" then client:disconnect(); message = "client stopped";
+		elseif role == "none" then message = "can't disconnect, you are not connected to anything";
+	end
 end
 
 function initClient(ip)
@@ -60,6 +82,7 @@ function initClient(ip)
 	client:connect(ip,26001)
 	client:send("hello!")
 	message = "client started"
+	role = "client"
 end
 
 function initServer()
@@ -68,4 +91,5 @@ function initServer()
 	server:setHandshake("hello")
 	server:send("hello!")
 	message = "server started"
+	role = "server"
 end
