@@ -57,7 +57,7 @@ function Console:draw()
 	-- Draw the console background
 	if self.backImage ~= nil then
 		love.graphics.setColor(200, 200, 250, 150) -- Background image colour
-		love.graphics.draw(self.backImage, self.width/2, self.curY - self.height/2)
+		--love.graphics.draw(self.backImage, self.width/2, self.curY - self.height/2)
 	end
 	
 	love.graphics.setColor(128, 128, 240, 150) -- Console colour
