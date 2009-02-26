@@ -49,7 +49,7 @@ function keypressed(key)
 end
 
 function connectCallback(ip, port)
-	status = ip .. "connected"
+	status = ip .. " is connected"
 end
 
 function recCallback(data,ip,port)
@@ -58,7 +58,7 @@ function recCallback(data,ip,port)
 end
 
 function disconnectCallback(ip, port)
-	status = "disconnected"
+	status = ip .. " disconnected"
 end
 
 function sendMessage(string)
