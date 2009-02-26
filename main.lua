@@ -54,7 +54,7 @@ end
 
 function recCallback(data)
 	message = "recieved message"
-	
+	remoteMessage = "data get!!"
 end
 
 function disconnectCallback(data)
