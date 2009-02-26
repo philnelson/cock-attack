@@ -48,16 +48,16 @@ function keypressed(key)
 	
 end
 
-function connectCallback()
+function connectCallback(data)
 	status = "connected"
 end
 
-function recCallback()
+function recCallback(data)
 	message = "recieved message"
-	remoteMessage = data
+	
 end
 
-function disconnectCallback()
+function disconnectCallback(data)
 	status = "disconnected"
 end
 
@@ -76,8 +76,8 @@ function stopNetworking()
 end
 
 function initClient(ip)
-	client:Init(26001)
-	client:setCallback(recCallback,connectCallback,disconnectCallback)
+	client:Init()
+	client:setCallback(recCallback(data))
 	client:setHandshake("hello")
 	client:connect(ip,26001)
 	client:send("hello!")
@@ -87,7 +87,7 @@ end
 
 function initServer()
 	server:Init(26001)
-	server:setCallback(recCallback,connectCallback,disconnectCallback)
+	server:setCallback(recCallback(data),connectCallback(data),disconnectCallback(data))
 	server:setHandshake("hello")
 	server:send("hello!")
 	message = "server started"
