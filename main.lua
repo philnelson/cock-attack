@@ -4,22 +4,97 @@ function load()
 	remoteMessage = ""
 	yourMessage = ""
 	status = "not connected"
-	
+	hasExited = 'yes'
 	love.filesystem.include "Console.lua"
 	love.filesystem.include "Client.lua"
 	love.filesystem.include "Server.lua"
-	font = love.graphics.newFont(love.default_font, 12)
-	love.graphics.setFont(font)
+	font = love.graphics.newFont(love.default_font, 14)
+	coolfont = love.graphics.newFont('fonts/orange-kid.ttf', 18)
+	menufont = love.graphics.newFont('fonts/orange-kid.ttf', 25)
+	logofont = love.graphics.newFont('fonts/dirty bakers dozen.ttf', 50)
+	love.graphics.setFont(coolfont)
+	metal_bg = love.graphics.newImage("images/grating-bg.png")
+	main_menu_bg = love.graphics.newImage("images/main_menu.png")
+	background = metal_bg
+
+	love.audio.setMode( 44100, 2, 512 )
+	love.audio.setVolume(.2)
+	menu_effect_1 = love.audio.newSound('sound/menu_effect_1.ogg')
+	menu_effect_2 = love.audio.newSound('sound/menu_effect_2.ogg')
+	menu_bg_music = love.audio.newSound('sound/COCK ATTACK.ogg')
+	
+	mainMenu()
+	
 	g_console = Console:new()
 	g_console:init()
 end
 
 function draw()
-	love.graphics.draw(message, 100, 300)
-	love.graphics.draw('someone:' .. ' ' .. remoteMessage,100,350)
-	love.graphics.draw('you:' .. ' ' .. yourMessage,100,400)
+	love.graphics.draw(background,400,300)
+	--love.graphics.draw(hasExited, 100, 300)
+	--love.graphics.draw('someone:' .. ' ' .. remoteMessage,100,350)
+	--love.graphics.draw('you:' .. ' ' .. yourMessage,100,400)
 	love.graphics.draw(role .. ' : ' .. status,5,590)
+	if screen == "main menu" then
+		love.audio.play(menu_bg_music,1)
+		love.graphics.setColor(0, 0, 0 )
+		love.graphics.setFont(logofont)
+		love.graphics.draw("C.O.C.K. ATTACK",25, 100)
+		love.graphics.setColor(255, 255, 255 )
+		love.graphics.setFont(menufont)
+		love.graphics.setColor(74, 130, 230 )
+		love.graphics.rectangle( 0, 400, 300, 300, 50 )
+		love.graphics.setColor(255,255,255 )
+		love.graphics.draw("Start Match .vs. CPU", 445, 333)
+		
+		love.graphics.setColor(74, 130, 230 )
+		love.graphics.rectangle( 0, 400, 360, 300, 50 )
+		love.graphics.setColor(255,255,255 )
+		love.graphics.draw("Host A Game", 445, 393)
+		
+		love.graphics.setColor(74, 130, 230 )
+		love.graphics.rectangle( 0, 400, 420, 300, 50 )
+		love.graphics.setColor(255,255,255 )
+		love.graphics.draw("Connect To Game", 445, 453)
+		
+		love.graphics.setFont(coolfont)
+		menuTrigger(400, 300, 300, 50,menu_effect_1)
+		menuTrigger(400, 360, 300, 50,menu_effect_2)
+		menuTrigger(400, 420, 300, 50,menu_effect_1)
+	end
+	
 	g_console:draw()
+end
+
+function menuTrigger(startx, starty, width, height, sound)
+	if mousex >= startx then
+		if mousex <= startx + width then
+			if mousey >= starty then
+				if mousey <= starty + height then
+					love.graphics.rectangle(1, startx, starty, width, height)
+					love.graphics.rectangle(1, startx-1, starty-1, width+1, height+1)
+					if(hasExited == 'yes') then
+					--	love.audio.play(sound,1)
+						hasExited = 'no'
+					end
+					hasExited = 'no'
+				else
+					hasExited = 'yes'
+				end
+			else
+				hasExited = 'yes'
+			end
+		else
+			hasExited = 'yes'
+		end
+	else
+		hasExited = 'yes'
+	end
+end
+
+function mainMenu()
+	screen = "main menu"
+	background = main_menu_bg
 end
 
 function update(dt)
@@ -27,6 +102,7 @@ function update(dt)
 	elseif role == "client" then client:update();
 	end
 	g_console:update(dt)
+	mousex, mousey = love.mouse.getPosition()
 end
 
 function keypressed(key)
@@ -45,6 +121,9 @@ function keypressed(key)
 	if key == love.key_backquote then
 		g_console:toggle() -- Or if you'd like, g_console:display(true/false)
 	end
+end
+
+function initBattle()
 	
 end
 
