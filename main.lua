@@ -12,18 +12,28 @@ function load()
 	font = love.graphics.newFont(love.default_font, 14)
 	coolfont = love.graphics.newFont('fonts/orange-kid.ttf', 18)
 	menufont = love.graphics.newFont('fonts/orange-kid.ttf', 25)
-	logofont = love.graphics.newFont('fonts/dirty bakers dozen.ttf', 50)
 	love.graphics.setFont(coolfont)
+	big_logo = love.graphics.newImage("images/logo.png")
 	metal_bg = love.graphics.newImage("images/grating-bg.png")
 	main_menu_bg = love.graphics.newImage("images/main_menu.png")
+	clicktostart = love.graphics.newAnimation( "images/clicktostart.png", 250, 50, .5, 2)
 	background = metal_bg
 	
 	love.audio.setVolume(.2)
-	menu_effect_1 = love.audio.newSound('sound/menu_effect_1.ogg')
-	menu_effect_2 = love.audio.newSound('sound/menu_effect_2.ogg')
-	menu_bg_music = love.audio.newSound('sound/COCK ATTACK.ogg')
+	--menu_effect_1 = love.audio.newSound('sound/menu_effect_1.ogg')
+	--menu_effect_2 = love.audio.newSound('sound/menu_effect_2.ogg')
+	--menu_bg_music = love.audio.newSound('sound/COCK ATTACK.ogg')
 	
 	mainMenu()
+	
+	-- Default HUD colors
+	player_head = love.graphics.newImage("images/player_head_green.png")
+	player_body = love.graphics.newImage("images/player_body_green.png")
+	player_l_arm = love.graphics.newImage("images/player_arm_green.png")
+	player_r_arm = love.graphics.newImage("images/player_arm_green.png")
+	player_l_leg = love.graphics.newImage("images/player_leg_green.png")
+	player_r_leg = love.graphics.newImage("images/player_leg_green.png")
+	playerData = {head = 1, l_arm=1, r_arm=1, body=1, l_leg=1, r_leg=1}
 	
 	g_console = Console:new()
 	g_console:init()
@@ -34,74 +44,41 @@ function draw()
 	--love.graphics.draw(hasExited, 100, 300)
 	--love.graphics.draw('someone:' .. ' ' .. remoteMessage,100,350)
 	--love.graphics.draw('you:' .. ' ' .. yourMessage,100,400)
-	love.graphics.draw(role .. ' : ' .. status,5,590)
+	--love.graphics.draw(role .. ' : ' .. status,5,590)
 	
 	if screen == "main menu" then
 		--love.audio.play(menu_bg_music,1)
-		love.graphics.setColor(0, 0, 0 )
-		love.graphics.setFont(logofont)
-		love.graphics.draw("C.O.C.K. ATTACK",25, 100)
+		love.graphics.draw(big_logo,250, 70)
 		
 		love.graphics.setColor(255, 255, 255 )
 		love.graphics.setFont(menufont)
-		love.graphics.setColor(74, 130, 230 )
-		love.graphics.rectangle( 0, 400, 300, 300, 50 )
 		love.graphics.setColor(255,255,255 )
-		love.graphics.draw("Start Match .vs. CPU", 445, 333)
-		
-		love.graphics.setColor(74, 130, 230 )
-		love.graphics.rectangle( 0, 400, 360, 300, 50 )
-		love.graphics.setColor(255,255,255 )
-		love.graphics.draw("Host A Game", 445, 393)
-		
-		love.graphics.setColor(74, 130, 230 )
-		love.graphics.rectangle( 0, 400, 420, 300, 50 )
-		love.graphics.setColor(255,255,255 )
-		love.graphics.draw("Connect To Game", 445, 453)
-		
+		love.graphics.draw(clicktostart, 400, 333)
 		love.graphics.setFont(coolfont)
-		menuTrigger(400, 300, 300, 50,menu_effect_1,cpuBattleScreen)
-		menuTrigger(400, 360, 300, 50,menu_effect_2,startHostScreen)
-		menuTrigger(400, 420, 300, 50,menu_effect_1,startClientScreen)
+		
 	end
 	
 	if screen == "cpu battle" then
-		love.graphics.setColor(0,255,0)
-		love.graphics.rectangle(1, 65, 20, 30, 30)
-		love.graphics.rectangle(1, 30, 40, 100, 100)
-		love.graphics.rectangle(1, 20, 60, 25, 50)
-		love.graphics.rectangle(1, 115, 60, 25, 50)
-		love.graphics.setColor(255,255,255 )
+		love.graphics.draw(player_head, 80, 20)
+		love.graphics.draw(player_body, 80, 85)
+		love.graphics.draw(player_l_arm, 30, 70)
+		love.graphics.draw(player_r_arm, 130, 70)
+		love.graphics.draw(player_r_arm, 130, 70)
+		love.graphics.draw(player_l_leg, 65, 140)
+		love.graphics.draw(player_r_leg, 90, 140)
+		
+		if(playerData.head == 1) then
+			player_head = love.graphics.newImage("images/player_head_green.png")
+		end
+		if(playerData.head == 2) then
+			player_head = love.graphics.newImage("images/player_head_yellow.png")
+		end
+		if(playerData.head == 3) then
+			player_head = love.graphics.newImage("images/player_head_red.png")
+		end
 	end
 	
 	g_console:draw()
-end
-
-function menuTrigger(startx, starty, width, height, sound, callBack)
-	menuItems[starty] = {x1=startx, y1=starty, x2=startx+width, y2=starty+height,callBack=callBack}
-	if mousex >= startx then
-		if mousex <= startx + width then
-			if mousey >= starty then
-				if mousey <= starty + height then
-					love.graphics.rectangle(1, startx, starty, width, height)
-					love.graphics.rectangle(1, startx-1, starty-1, width+1, height+1)
-					if(hasExited == 'yes') then
-					--	love.audio.play(sound,1)
-						hasExited = 'no'
-					end
-					hasExited = 'no'
-				else
-					hasExited = 'yes'
-				end
-			else
-				hasExited = 'yes'
-			end
-		else
-			hasExited = 'yes'
-		end
-	else
-		hasExited = 'yes'
-	end
 end
 
 function mainMenu()
@@ -115,6 +92,10 @@ function cpuBattleScreen()
 end
 
 function update(dt)
+	if screen == "main menu" then
+		clicktostart:update(dt) 
+	end
+
 	if role == "server" then server:update();
 	elseif role == "client" then client:update();
 	end
@@ -138,14 +119,25 @@ function keypressed(key)
 	if key == love.key_backquote then
 		g_console:toggle() -- Or if you'd like, g_console:display(true/false)
 	end
+	
+	if screen == "cpu battle" then
+		if key == love.key_1 then
+			playerData.head = 1
+		end
+		if key == love.key_2 then
+			playerData.head = 2
+		end
+		if key == love.key_3 then
+			playerData.head = 3
+		end
+	end
+	
 end
 
 function mousereleased(mx, my, button)
 	if button == love.mouse_left then 
 		if screen == "main menu" then
-			for k,v in pairs(menuItems) do 
-				cpuBattleScreen()
-			end
+			cpuBattleScreen()
 		end
 	end
 end
