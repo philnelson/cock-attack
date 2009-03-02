@@ -11,20 +11,22 @@ function load()
 	hasExited = 'yes'
 	menuItems = {}
 	shifter_position = 3
+	selected_attack = "NONE"
+	target_selected = "NONE"
 	
 	font = love.graphics.newFont(love.default_font, 14)
 	coolfont = love.graphics.newFont('fonts/orange-kid.ttf', 18)
 	menufont = love.graphics.newFont('fonts/orange-kid.ttf', 25)
 	love.graphics.setFont(coolfont)
 	
-	battle_view_bg = love.graphics.newImage("images/battle_view_bg.png",2)
+	--battle_view_bg = love.graphics.newImage("images/battle_view_bg.png",2)
 	big_logo = love.graphics.newImage("images/logo.png",2)
 	metal_bg = love.graphics.newImage("images/grating-bg.png",2)
 	main_menu_bg = love.graphics.newImage("images/main_menu.png",2)
 	
 	clicktostart = love.graphics.newAnimation( "images/clicktostart.png", 250, 50, .5, 2)
 	
-	shifter = love.graphics.newAnimation( "images/shifter_frames.png", 200, 236, 0, 0)
+	shifter = love.graphics.newAnimation( "images/shifter_frames.png", 200, 236, 0, 4)
 	
 	background = metal_bg
 	
@@ -61,6 +63,7 @@ function draw()
 	--love.graphics.draw(hasExited, 100, 300)
 	--love.graphics.draw('someone:' .. ' ' .. remoteMessage,100,350)
 	--love.graphics.draw('you:' .. ' ' .. yourMessage,100,400)
+	love.graphics.setColor(255,255,255)
 	--love.graphics.draw(role .. ' : ' .. status,5,590)
 	
 	if screen == "main menu" then
@@ -75,8 +78,11 @@ function draw()
 	end
 	
 	if screen == "cpu battle" then
-		love.graphics.rectangle(1,174,14,601,401)
-		love.graphics.draw(battle_view_bg,475,215)
+		love.graphics.draw("ATTACKING WITH: " .. selected_attack, 10, 400)
+		love.graphics.draw("TARGETING: " .. target_selected, 200, 420)
+		love.graphics.setColor(50,50,50)
+		love.graphics.rectangle(0,200,14,580,390)
+		--love.graphics.draw(battle_view_bg,475,215)
 	
 		love.graphics.draw(player_body, 80, 85)
 		love.graphics.draw(player_head, 80, 25)
@@ -91,6 +97,11 @@ function draw()
 		love.graphics.draw(cpu_r_arm, 550, 185)
 		love.graphics.draw(cpu_l_leg, 485, 255)
 		love.graphics.draw(cpu_r_leg, 510, 255)
+		
+		if target_selected == "HEAD" then
+			love.graphics.setColor(255,255,255)
+			love.graphics.rectangle(1,485,125,30,30)
+		end
 		
 		player_head:seek(playerData.head)
 		player_body:seek(playerData.body)
@@ -172,7 +183,50 @@ function mousereleased(mx, my, button)
 		if screen == "main menu" then
 			cpuBattleScreen()
 		end
+		if screen == "cpu battle" then
+			-- If we've clicked on the shifter
+			if clickTarget(30,375,175,200) then
+				if	shifter_position < 3 then
+					shifter_position = shifter_position + 1
+				else
+					shifter_position = 0
+				end
+				if shifter_position == 3 then
+					selected_attack = "NONE"
+				end
+				if shifter_position == 0 then
+					selected_attack = "BEAK"
+				end
+				if shifter_position == 1 then
+					selected_attack = "WINGS"
+				end
+				if shifter_position == 2 then
+					selected_attack = "FEET"
+				end
+			end
+			-- if we've clicked on the battlefield HUD
+			if clickTarget(485,125,30,30) then
+				if target_selected == "HEAD" then
+					target_selected = "NONE"
+				else
+					target_selected = "HEAD"
+				end
+			end
+		end
 	end
+end
+
+function clickTarget(x,y,w,h)
+	if mousex >= x then
+		if mousex <= x+w then
+			if mousey >= y then
+				if mousey <= y+h then
+					return true
+				end
+			end
+		end
+	end
+	return false
 end
 
 function initBattle()
